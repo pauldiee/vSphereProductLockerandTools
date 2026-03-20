@@ -30,7 +30,7 @@ Built for vSphere 7.x / 8.x / 9.x environments, including VCF deployments with v
 
 ### Credentials
 - Prompts on first run, saves encrypted `.cred` file next to the script named `<vCenterServer>.cred`
-- Encrypted via `Export-Clixml` / DPAPI, bound to the current Windows user — cannot be decrypted on a different machine or by a different account
+- Username and password entered via `Read-Host` in the terminal (no GUI dialog). Saved via `Export-Clixml` / DPAPI, bound to the current Windows user — cannot be decrypted on a different machine or by a different account
 - `-ResetCredentials` forces a new prompt and overwrites the saved file
 
 ---

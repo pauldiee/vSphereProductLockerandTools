@@ -104,13 +104,21 @@
       and VCF.PowerCLI (vSphere 9) and imports whichever is available
 
     Credential storage:
+    - Username and password entered via Read-Host in the terminal (no GUI dialog)
+    - Password collected with -AsSecureString (masked input)
     - Saved as <vCenterServer>.cred in the same folder as the script
-    - Encrypted via Export-Clixml to the current Windows user account
+    - Encrypted via Export-Clixml to the current Windows user account (DPAPI)
     - Cannot be decrypted on a different machine or by a different user
     - Use -ResetCredentials to force a new prompt and overwrite the saved file
 
 .CHANGELOG
-    v1.3.2  2026-03-08  Paul van Dieen
+    v1.3.3  2026-03-20  Paul van Dieen
+        - Replaced Get-Credential GUI dialog with Read-Host terminal prompts
+        - Username prompted via Read-Host, password via Read-Host -AsSecureString
+        - Credential object constructed via PSCredential::new() - behaviour unchanged
+        - Updated .NOTES credential section to reflect terminal-based input
+
+    v1.3.2  2026-03-20  Paul van Dieen
         - Cleanup: collapsed 13-entry iterative dev changelog into 3 clean entries
         - Cleanup: fixed stale synopsis and description (still referenced ESXi version
           based default; now correctly describes VMFSOS UUID via ESXCLI approach)
@@ -166,8 +174,8 @@ param(
 
 # --- PowerCLI Module Check ----------------------------------------------------
 # Supports both VMware PowerCLI (vSphere 7/8) and VCF PowerCLI 9.0 (vSphere 9)
-$vcfModule    = Get-Module -Name VCF.PowerCLI                  -ListAvailable
-$legacyModule = Get-Module -Name VMware.VimAutomation.Core     -ListAvailable
+$vcfModule    = Get-Module -Name VCF.PowerCLI              -ListAvailable
+$legacyModule = Get-Module -Name VMware.VimAutomation.Core -ListAvailable
 
 if (-not $vcfModule -and -not $legacyModule) {
     Write-Host "  [ERROR] No compatible PowerCLI module found." -ForegroundColor Red
@@ -235,6 +243,10 @@ function Show-Banner {
     Write-Host "${BOLD}${CYAN}  +==========================================================+${RESET}"
     Write-Host "${BOLD}${CYAN}  |   VMware ProductLocker & VMTools Audit Tool              |${RESET}"
     Write-Host "${BOLD}${CYAN}  |   vSphere Host & Cluster Configuration Inspector         |${RESET}"
+    Write-Host "${BOLD}${CYAN}  +----------------------------------------------------------+${RESET}"
+    Write-Host "${BOLD}${CYAN}  |   Author : Paul van Dieen                                |${RESET}"
+    Write-Host "${BOLD}${CYAN}  |   Blog   : https://www.hollebollevsan.nl                 |${RESET}"
+    Write-Host "${BOLD}${CYAN}  |   GitHub : https://github.com/pauldiee                   |${RESET}"
     Write-Host "${BOLD}${CYAN}  +==========================================================+${RESET}"
     Write-Host ""
 }
@@ -282,11 +294,15 @@ function Get-SavedCredential {
         Write-Info "No saved credentials found - prompting..."
     }
 
-    $cred = Get-Credential -Message "Enter credentials for $vCenterServer"
-    if (-not $cred) {
-        Write-Err "No credentials provided."
+    Write-Host ""
+    Write-Host "  ${DIM}Enter credentials for $vCenterServer${RESET}"
+    $username = Read-Host "  Username"
+    if ([string]::IsNullOrWhiteSpace($username)) {
+        Write-Err "No username provided."
         exit 1
     }
+    $securePass = Read-Host "  Password" -AsSecureString
+    $cred = [System.Management.Automation.PSCredential]::new($username, $securePass)
 
     try {
         $cred | Export-Clixml -Path $credFile -Force -ErrorAction Stop
@@ -638,7 +654,7 @@ function Invoke-ProductLockerAudit {
             switch ($status) {
                 "OK"      {
                     $sfx = if ($SetValue) { "  ${DIM}(already correct)${RESET}" } else { "" }
-                    Write-OK   "$($vmhost.Name)  ${DIM}-> $currentVal${RESET}$sfx"; $okCount++
+                    Write-OK   "$($vmhost.Name) ${DIM}-> $currentVal${RESET}$sfx"; $okCount++
                 }
                 "MISMATCH" {
                     Write-Warn "$($vmhost.Name)  ${DIM}-> $currentVal  (expected: $TargetPath)${RESET}"; $warnCount++
