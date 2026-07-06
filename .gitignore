@@ -1,0 +1,14 @@
+# Credentials - never commit
+*.cred
+creds/
+
+# CSV export output
+*.csv
+
+# Logs / temp
+*.log
+*.tmp
+
+# Blog post drafts (local only)
+blogpost*.html
+blogpost*.md
