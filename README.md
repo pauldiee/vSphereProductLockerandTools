@@ -52,6 +52,8 @@ Install-Module -Name VCF.PowerCLI -Scope CurrentUser
 Install-Module -Name VMware.PowerCLI -Scope CurrentUser
 ```
 
+VCF.PowerCLI 9.x needs PowerShell 7 ([KB 409981](https://knowledge.broadcom.com/external/article/409981)). Setting up PowerShell 7 and VCF.PowerCLI on a jump host, with or without internet access, and keeping one PowerCLI version per host: [Jump Host: PowerShell 7 and VCF PowerCLI](https://vcf-planning.hollebollevsan.nl/docs/42-jump-host-powershell/).
+
 ---
 
 ## Parameters
