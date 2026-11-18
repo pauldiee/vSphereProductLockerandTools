@@ -58,6 +58,12 @@
 .PARAMETER ResetCredentials
     (Optional) Force a new credential prompt even if a saved credential file exists.
 
+.PARAMETER SkipCertificateValidation
+    (Optional) Accept a vCenter with an untrusted (self-signed) certificate, for
+    this PowerShell session only. For labs; in production, make the vCenter
+    certificate trusted instead. Without it the PowerCLI configuration is left
+    as it is.
+
 .EXAMPLE
     # First run - prompts for credentials and saves them, then shows audit menu
     .\VMware-ProductLocker-VMTools.ps1 -vCenterServer vc01.lab.local
@@ -110,8 +116,16 @@
     - Encrypted via Export-Clixml to the current Windows user account (DPAPI)
     - Cannot be decrypted on a different machine or by a different user
     - Use -ResetCredentials to force a new prompt and overwrite the saved file
+#>
 
-.CHANGELOG
+<# CHANGELOG
+    v1.3.5  2026-11-18  Paul van Dieen
+        - Added -SkipCertificateValidation: sets InvalidCertificateAction Ignore
+          for this session only, so a vCenter with an untrusted certificate can
+          be used (lab). Without it the PowerCLI configuration is left alone (#4)
+        - Changelog moved out of the help block into its own comment block:
+          the unknown .CHANGELOG keyword made Get-Help ignore the whole help
+
     v1.3.4  2026-11-16  Paul van Dieen
         - PowerCLI loading imports only VMware.VimAutomation.Core instead of the
           whole VCF.PowerCLI bundle (#2)
@@ -177,7 +191,9 @@ param(
 
     [switch]$ExportReport,
 
-    [switch]$ResetCredentials
+    [switch]$ResetCredentials,
+
+    [switch]$SkipCertificateValidation
 )
 
 # --- PowerCLI Module Check ----------------------------------------------------
@@ -988,6 +1004,12 @@ $credential = Get-SavedCredential -vCenterServer $vCenterServer
 # -- Connect ------------------------------------------------------------------
 Write-Section "Connecting to vCenter"
 Write-Info "Target: $vCenterServer"
+
+if ($SkipCertificateValidation) {
+    # Session scope only: never change the user's PowerCLI configuration.
+    $null = Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Scope Session -Confirm:$false
+    Write-Info "Certificate validation skipped for this session (-SkipCertificateValidation)"
+}
 
 try {
     $null = Connect-VIServer -Server $vCenterServer -Credential $credential -ErrorAction Stop

@@ -71,6 +71,7 @@ VCF.PowerCLI 9.x needs PowerShell 7 ([KB 409981](https://knowledge.broadcom.com/
 | `-CopySourcePath` | string | No | Source folder path on datastore (required with `-CopyVMTools`) |
 | `-ExportReport` | switch | No | Export results to CSV in the current directory |
 | `-ResetCredentials` | switch | No | Force new credential prompt, overwrite saved `.cred` file |
+| `-SkipCertificateValidation` | switch | No | Accept a vCenter with an untrusted (self-signed) certificate, for this PowerShell session only. For labs; in production, make the vCenter certificate trusted instead. |
 
 ---
 
