@@ -6,6 +6,10 @@ Built for vSphere 7.x / 8.x / 9.x environments, including VCF deployments with v
 
 > Blog post: [hollebollevsan.nl](https://www.hollebollevsan.nl)
 
+| Script | Version | Purpose |
+|---|---|---|
+| `VMware-ProductLocker-VMTools.ps1` | 1.3.6 | Audit and set the ProductLocker location per cluster, upload or copy VMware Tools, and audit VMware Tools per VM |
+
 ---
 
 ## Step-by-step guide
