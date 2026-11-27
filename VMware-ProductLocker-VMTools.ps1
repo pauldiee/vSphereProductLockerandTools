@@ -95,6 +95,8 @@
     .\VMware-ProductLocker-VMTools.ps1 -vCenterServer vc01.lab.local -ResetProductLocker
 
 .NOTES
+    Script   : VMware-ProductLocker-VMTools.ps1
+    Version  : 1.3.6
     Author   : Paul van Dieen
     Blog     : https://www.hollebollevsan.nl
     Requires : VMware PowerCLI 12+ (vSphere 7/8) or VCF PowerCLI 9.0+ (vSphere 9)
@@ -119,6 +121,10 @@
 #>
 
 <# CHANGELOG
+    v1.3.6  2026-11-27  Paul van Dieen
+        - $scriptVersion, $scriptAuthor and $scriptBlogUrl, with the version in the
+          banner and in .NOTES, as in the other toolkits. No change in behaviour
+
     v1.3.5  2026-11-18  Paul van Dieen
         - Added -SkipCertificateValidation: sets InvalidCertificateAction Ignore
           for this session only, so a vCenter with an untrusted certificate can
@@ -195,6 +201,10 @@ param(
 
     [switch]$SkipCertificateValidation
 )
+
+$scriptVersion = '1.3.6'
+$scriptAuthor  = 'Paul van Dieen'
+$scriptBlogUrl = 'https://www.hollebollevsan.nl'
 
 # --- PowerCLI Module Check ----------------------------------------------------
 # The script needs only VMware.VimAutomation.Core (and what it requires), not
@@ -299,8 +309,9 @@ function Show-Banner {
     Write-Host "${BOLD}${CYAN}  |   VMware ProductLocker & VMTools Audit Tool              |${RESET}"
     Write-Host "${BOLD}${CYAN}  |   vSphere Host & Cluster Configuration Inspector         |${RESET}"
     Write-Host "${BOLD}${CYAN}  +----------------------------------------------------------+${RESET}"
-    Write-Host "${BOLD}${CYAN}  |   Author : Paul van Dieen                                |${RESET}"
-    Write-Host "${BOLD}${CYAN}  |   Blog   : https://www.hollebollevsan.nl                 |${RESET}"
+    Write-Host ("${BOLD}${CYAN}  |   {0,-55}|${RESET}" -f "Version: v$scriptVersion")
+    Write-Host ("${BOLD}${CYAN}  |   {0,-55}|${RESET}" -f "Author : $scriptAuthor")
+    Write-Host ("${BOLD}${CYAN}  |   {0,-55}|${RESET}" -f "Blog   : $scriptBlogUrl")
     Write-Host "${BOLD}${CYAN}  |   GitHub : https://github.com/pauldiee                   |${RESET}"
     Write-Host "${BOLD}${CYAN}  +==========================================================+${RESET}"
     Write-Host ""
