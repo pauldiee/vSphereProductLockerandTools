@@ -8,6 +8,14 @@ Built for vSphere 7.x / 8.x / 9.x environments, including VCF deployments with v
 
 ---
 
+## Step-by-step guide
+
+Background on what this audit checks:
+
+- [VMware Tools ProductLocker: shared repository and why it resets](https://docs.hollebollevsan.nl/docs/18-vmware-tools-productlocker/) on docs.hollebollevsan.nl: the ways to point hosts at a shared VMware Tools repository, and why the setting needs checking again after an upgrade.
+
+---
+
 ## What it does
 
 ### ProductLocker
